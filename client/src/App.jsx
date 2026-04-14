@@ -50,10 +50,14 @@ export default function App() {
   };
 
   // Summary stats
-  const totalOwed = cards.reduce((s, c) => s + Number(c.balance || 0), 0);
-  const dueWeek   = cards
+  const totalOwed      = cards.reduce((s, c) => s + Number(c.balance || 0), 0);
+  const dueWeek        = cards
     .filter(c => { const d = daysUntil(c.dueDate); return c.balance > 0 && d != null && d <= 7 && d >= 0; })
     .reduce((s, c) => s + Number(c.balance || 0), 0);
+  const totalLimit     = cards.reduce((s, c) => s + Number(c.limit || 0), 0);
+  const totalCurrent   = cards.reduce((s, c) => s + Number(c.currentBalance || 0), 0);
+  const availCredit    = totalLimit - totalCurrent;
+  const utilPct        = totalLimit > 0 ? (totalCurrent / totalLimit * 100) : 0;
 
   const todayStr = new Date().toLocaleDateString('en-CA', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -87,8 +91,16 @@ export default function App() {
             <div className="summary-value">{fmt(dueWeek)}</div>
           </div>
           <div className="summary-card">
-            <div className="summary-label">Active cards</div>
-            <div className="summary-value">{cards.length}</div>
+            <div className="summary-label">Total credit</div>
+            <div className="summary-value">{fmt(totalLimit)}</div>
+          </div>
+          <div className="summary-card">
+            <div className="summary-label">Available credit</div>
+            <div className="summary-value">{fmt(availCredit)}</div>
+          </div>
+          <div className="summary-card">
+            <div className="summary-label">Utilization</div>
+            <div className="summary-value">{utilPct.toFixed(1)}%</div>
           </div>
         </div>
 
