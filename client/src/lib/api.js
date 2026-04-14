@@ -14,11 +14,14 @@ async function req(method, path, body) {
 
 export const api = {
   cards: {
-    list:   ()       => req('GET',    '/cards'),
-    get:    (id)     => req('GET',    `/cards/${id}`),
-    create: (body)   => req('POST',   '/cards', body),
-    update: (id, b)  => req('PUT',    `/cards/${id}`, b),
-    delete: (id)     => req('DELETE', `/cards/${id}`),
+    list:         ()       => req('GET',    '/cards'),
+    get:          (id)     => req('GET',    `/cards/${id}`),
+    create:       (body)   => req('POST',   '/cards', body),
+    update:       (id, b)  => req('PUT',    `/cards/${id}`, b),
+    delete:       (id)     => req('DELETE', `/cards/${id}`),
+    statement:    (id, b)  => req('PATCH',  `/cards/${id}/statement`, b),
+    pay:          (id, b)  => req('POST',   `/cards/${id}/pay`, b),
+    transactions: (id)     => req('GET',    `/cards/${id}/transactions`),
   },
   settings: {
     get:  ()     => req('GET', '/settings'),

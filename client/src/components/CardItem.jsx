@@ -1,6 +1,6 @@
 import { fmt, fmtDate, daysUntil, daysLabel } from '../lib/utils';
 
-export default function CardItem({ card, onEdit, onDelete }) {
+export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, onHistory }) {
   const limit   = Number(card.limit || 0);
   const balance = Number(card.balance || 0);
   const current = Number(card.currentBalance || 0);
@@ -26,6 +26,8 @@ export default function CardItem({ card, onEdit, onDelete }) {
           {card.last4 && <div className="card-last4">···· {card.last4}</div>}
         </div>
         <div className="card-actions">
+          <button className="btn btn-ghost btn-sm btn-statement" onClick={() => onStatement(card)}>Statement</button>
+          <button className="btn btn-ghost btn-sm btn-pay" onClick={() => onPay(card)}>Pay</button>
           <button className="btn btn-ghost btn-sm" onClick={() => onEdit(card)}>Edit</button>
           <button className="btn btn-ghost btn-sm btn-danger" onClick={() => onDelete(card.id)}>✕</button>
         </div>
@@ -74,6 +76,8 @@ export default function CardItem({ card, onEdit, onDelete }) {
           APR {card.rate}% · ~{(card.rate / 12).toFixed(2)}%/month
         </div>
       )}
+
+      <button className="card-history-link" onClick={() => onHistory(card)}>History</button>
     </div>
   );
 }

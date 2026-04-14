@@ -2,15 +2,21 @@ import { useState } from 'react';
 import { useCards } from './hooks/useCards';
 import CardItem from './components/CardItem';
 import CardForm from './components/CardForm';
+import NewStatementModal from './components/NewStatementModal';
+import PayModal from './components/PayModal';
+import HistoryModal from './components/HistoryModal';
 import Reminders from './components/Reminders';
 import SettingsModal from './components/SettingsModal';
 import { fmt, daysUntil } from './lib/utils';
 
 export default function App() {
-  const { cards, loading, error, create, update, remove } = useCards();
-  const [editCard, setEditCard]       = useState(null);   // card obj or true (add new)
-  const [showSettings, setShowSettings] = useState(false);
-  const [toast, setToast]             = useState('');
+  const { cards, loading, error, create, update, remove, newStatement, payCard } = useCards();
+  const [editCard,      setEditCard]      = useState(null);   // card obj or true (add new)
+  const [statementCard, setStatementCard] = useState(null);
+  const [payingCard,    setPayingCard]    = useState(null);
+  const [historyCard,   setHistoryCard]   = useState(null);
+  const [showSettings,  setShowSettings]  = useState(false);
+  const [toast,         setToast]         = useState('');
 
   const showToast = (msg) => {
     setToast(msg);
@@ -31,6 +37,16 @@ export default function App() {
     if (!confirm('Delete this card?')) return;
     await remove(id);
     showToast('Card removed');
+  };
+
+  const handleStatement = async (balance, dueDate) => {
+    await newStatement(statementCard.id, balance, dueDate);
+    showToast('Statement saved');
+  };
+
+  const handlePay = async (amount, note) => {
+    await payCard(payingCard.id, amount, note);
+    showToast('Payment recorded');
   };
 
   // Summary stats
@@ -97,6 +113,9 @@ export default function App() {
                   card={c}
                   onEdit={setEditCard}
                   onDelete={handleDelete}
+                  onStatement={setStatementCard}
+                  onPay={setPayingCard}
+                  onHistory={setHistoryCard}
                 />
               ))
             )}
@@ -109,6 +128,29 @@ export default function App() {
           card={editCard === true ? null : editCard}
           onSave={handleSave}
           onClose={() => setEditCard(null)}
+        />
+      )}
+
+      {statementCard && (
+        <NewStatementModal
+          card={statementCard}
+          onSave={handleStatement}
+          onClose={() => setStatementCard(null)}
+        />
+      )}
+
+      {payingCard && (
+        <PayModal
+          card={payingCard}
+          onSave={handlePay}
+          onClose={() => setPayingCard(null)}
+        />
+      )}
+
+      {historyCard && (
+        <HistoryModal
+          card={historyCard}
+          onClose={() => setHistoryCard(null)}
         />
       )}
 
