@@ -97,7 +97,7 @@ a { color: var(--good); }
 /* ── Summary bar ─────────────────────────────────── */
 .summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin-bottom: 2rem;
 }
@@ -414,7 +414,6 @@ a { color: var(--good); }
 @media (max-width: 640px) {
   .cards-grid      { grid-template-columns: 1fr; }
   .summary         { grid-template-columns: 1fr 1fr; }
-  .summary-card:last-child { grid-column: 1 / -1; }
   .form-grid       { grid-template-columns: 1fr; }
   .form-group.full { grid-column: 1; }
   .header          { flex-direction: column; align-items: flex-start; gap: 12px; }
