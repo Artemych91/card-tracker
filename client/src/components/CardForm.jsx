@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
 const EMPTY = {
-  name: '', last4: '', limit: '', balance: '',
-  currentBalance: '', rate: '', statementDate: '', dueDate: '',
+  name: '', last4: '', limit: '',
+  currentBalance: '', rate: '', statementDate: '', minimumPayment: '',
 };
 
 export default function CardForm({ card, onSave, onClose }) {
@@ -13,14 +13,13 @@ export default function CardForm({ card, onSave, onClose }) {
   useEffect(() => {
     if (card) {
       setForm({
-        name:            card.name || '',
-        last4:           card.last4 || '',
-        limit:           card.limit ?? '',
-        balance:         card.balance ?? '',
-        currentBalance:  card.currentBalance ?? '',
-        rate:            card.rate ?? '',
-        statementDate:   card.statementDate || '',
-        dueDate:         card.dueDate || '',
+        name:           card.name || '',
+        last4:          card.last4 || '',
+        limit:          card.limit ?? '',
+        currentBalance: card.currentBalance ?? '',
+        rate:           card.rate ?? '',
+        statementDate:  card.statementDate || '',
+        minimumPayment: card.minimumPayment ?? '',
       });
     } else {
       setForm(EMPTY);
@@ -62,10 +61,6 @@ export default function CardForm({ card, onSave, onClose }) {
               <input type="number" value={form.limit} onChange={set('limit')} placeholder="4000" />
             </div>
             <div className="form-group">
-              <label>Statement balance ($)</label>
-              <input type="number" value={form.balance} onChange={set('balance')} placeholder="921" />
-            </div>
-            <div className="form-group">
               <label>Current balance ($)</label>
               <input type="number" value={form.currentBalance} onChange={set('currentBalance')} placeholder="1200" />
             </div>
@@ -78,8 +73,8 @@ export default function CardForm({ card, onSave, onClose }) {
               <input type="date" value={form.statementDate} onChange={set('statementDate')} />
             </div>
             <div className="form-group">
-              <label>Due date</label>
-              <input type="date" value={form.dueDate} onChange={set('dueDate')} />
+              <label>Minimum payment ($)</label>
+              <input type="number" step="0.01" value={form.minimumPayment} onChange={set('minimumPayment')} placeholder="10.00" />
             </div>
           </div>
           {err && <p className="form-error">{err}</p>}
