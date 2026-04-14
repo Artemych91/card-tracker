@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const cardsRouter = require('./routes/cards');
 const settingsRouter = require('./routes/settings');
+const emailLogsRouter = require('./routes/emailLogs');
 const { startCron, sendReminders } = require('./reminders');
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 // API routes
 app.use('/api/cards', cardsRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/email-logs', emailLogsRouter);
 
 // Trigger reminder manually (useful for testing)
 app.post('/api/reminders/send', async (req, res) => {

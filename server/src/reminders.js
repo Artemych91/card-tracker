@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
+const { randomUUID } = require('crypto');
 const db = require('./db');
+const { DEFAULT_USER_ID } = db;
 
 function getSetting(key) {
   const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
@@ -93,8 +95,14 @@ async function sendReminders() {
       html,
     });
     console.log(`[reminders] Email sent to ${toEmail} for ${due.length} card(s).`);
+    db.prepare(`
+      INSERT INTO email_logs (id, user_id, card_id, status) VALUES (?, ?, NULL, 'success')
+    `).run(randomUUID(), DEFAULT_USER_ID);
   } catch (err) {
     console.error('[reminders] Failed to send email:', err.message);
+    db.prepare(`
+      INSERT INTO email_logs (id, user_id, card_id, status, error) VALUES (?, ?, NULL, 'failed', ?)
+    `).run(randomUUID(), DEFAULT_USER_ID, err.message);
   }
 }
 
