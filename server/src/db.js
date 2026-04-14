@@ -50,6 +50,8 @@ db.exec(`
     created_at    TEXT DEFAULT (datetime('now'))
   );
 
+  CREATE INDEX IF NOT EXISTS idx_transactions_card_id ON transactions(card_id, created_at DESC);
+
   CREATE TABLE IF NOT EXISTS email_logs (
     id      TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
