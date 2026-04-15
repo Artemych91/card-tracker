@@ -333,6 +333,7 @@ a { color: var(--good); }
 }
 
 .form-error   { font-size: 13px; color: var(--danger); margin-top: 10px; }
+.form-hint    { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
 
 /* ── Transaction history ─────────────────────────── */
 .tx-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
