@@ -113,18 +113,19 @@ router.post('/:id/pay', (req, res) => {
 
   const newBalance = Math.max(0, card.balance - amount);
   const note = req.body.note || null;
+  const txId = randomUUID();
 
   db.prepare(`
     INSERT INTO transactions (id, card_id, user_id, type, amount, balance_after, note)
     VALUES (?, ?, ?, 'payment', ?, ?, ?)
-  `).run(randomUUID(), req.params.id, DEFAULT_USER_ID, amount, newBalance, note);
+  `).run(txId, req.params.id, DEFAULT_USER_ID, amount, newBalance, note);
 
   db.prepare(`
     UPDATE cards SET balance = ?, updated_at = datetime('now') WHERE id = ?
   `).run(newBalance, req.params.id);
 
   const updated = db.prepare('SELECT * FROM cards WHERE id = ?').get(req.params.id);
-  res.json(toClient(updated));
+  res.json({ transactionId: txId, card: toClient(updated) });
 });
 
 // Mount transactions sub-router

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useCards } from './hooks/useCards';
 import CardItem from './components/CardItem';
 import CardForm from './components/CardForm';
@@ -10,13 +10,15 @@ import SettingsModal from './components/SettingsModal';
 import { fmt, daysUntil } from './lib/utils';
 
 export default function App() {
-  const { cards, loading, error, create, update, remove, newStatement, payCard } = useCards();
+  const { cards, loading, error, create, update, remove, newStatement, payCard, undoPayment } = useCards();
   const [editCard,      setEditCard]      = useState(null);   // card obj or true (add new)
   const [statementCard, setStatementCard] = useState(null);
   const [payingCard,    setPayingCard]    = useState(null);
   const [historyCard,   setHistoryCard]   = useState(null);
   const [showSettings,  setShowSettings]  = useState(false);
   const [toast,         setToast]         = useState('');
+  const [undoState,     setUndoState]     = useState(null); // { cardId, txId }
+  const undoTimer = useRef(null);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -45,9 +47,21 @@ export default function App() {
   };
 
   const handlePay = async (amount, note) => {
-    await payCard(payingCard.id, amount, note);
+    const { card, transactionId } = await payCard(payingCard.id, amount, note);
     showToast('Payment recorded');
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndoState({ cardId: card.id, txId: transactionId });
+    undoTimer.current = setTimeout(() => setUndoState(null), 5000);
   };
+
+  const handleUndo = async () => {
+    if (!undoState) return;
+    clearTimeout(undoTimer.current);
+    await undoPayment(undoState.cardId, undoState.txId);
+    setUndoState(null);
+    showToast('Payment undone');
+  };
+
 
   // Summary stats
   const totalOwed      = cards.reduce((s, c) => s + Number(c.balance || 0), 0);
@@ -170,6 +184,13 @@ export default function App() {
       )}
 
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+
+      {undoState && (
+        <div className="undo-bar">
+          <span>Payment recorded</span>
+          <button className="btn btn-ghost btn-sm" onClick={handleUndo}>Undo</button>
+        </div>
+      )}
 
       <div className={`toast ${toast ? 'show' : ''}`}>{toast}</div>
     </>

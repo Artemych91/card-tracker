@@ -27,6 +27,9 @@ export const api = {
     get:  ()     => req('GET', '/settings'),
     save: (body) => req('PUT', '/settings', body),
   },
+  transactions: {
+    undo: (cardId, txId) => req('DELETE', `/cards/${cardId}/transactions/${txId}`),
+  },
   reminders: {
     sendNow: () => req('POST', '/reminders/send'),
   },

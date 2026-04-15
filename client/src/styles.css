@@ -391,6 +391,24 @@ a { color: var(--good); }
   border-top: 1px solid var(--border);
 }
 
+/* ── Undo bar ────────────────────────────────────── */
+.undo-bar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  padding: 8px 8px 8px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 201;
+  white-space: nowrap;
+}
+
 /* ── Toast ───────────────────────────────────────── */
 .toast {
   position: fixed;
