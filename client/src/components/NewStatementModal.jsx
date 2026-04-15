@@ -1,8 +1,20 @@
 import { useState } from 'react';
 
+function suggestDueDate(card) {
+  const due = card.dueDate ? new Date(card.dueDate + 'T00:00:00') : null;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  // suggest today+21 if no due date or due date is in the past
+  if (!due || due < today) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + 21);
+    return d.toISOString().slice(0, 10);
+  }
+  return card.dueDate;
+}
+
 export default function NewStatementModal({ card, onSave, onClose }) {
   const [balance,  setBalance]  = useState(card.balance ?? '');
-  const [dueDate,  setDueDate]  = useState(card.dueDate || '');
+  const [dueDate,  setDueDate]  = useState(suggestDueDate(card));
   const [saving,   setSaving]   = useState(false);
   const [err,      setErr]      = useState('');
 
@@ -35,6 +47,7 @@ export default function NewStatementModal({ card, onSave, onClose }) {
             <div className="form-group full">
               <label>Due date</label>
               <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+              <span className="form-hint">21 days is the legal minimum</span>
             </div>
           </div>
           {err && <p className="form-error">{err}</p>}
