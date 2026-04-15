@@ -125,7 +125,10 @@ export default function App() {
                   card={c}
                   onEdit={setEditCard}
                   onDelete={handleDelete}
-                  onStatement={setStatementCard}
+                  onStatement={c => {
+                    if (c.balance > 0 && !confirm(`This card has an unpaid balance of ${fmt(c.balance)}. Record a new statement anyway?`)) return;
+                    setStatementCard(c);
+                  }}
                   onPay={setPayingCard}
                   onHistory={setHistoryCard}
                 />
