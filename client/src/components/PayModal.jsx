@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { fmt } from '../lib/utils';
 
 export default function PayModal({ card, onSave, onClose }) {
   const [amount,  setAmount]  = useState(card.balance ?? '');
@@ -13,6 +14,19 @@ export default function PayModal({ card, onSave, onClose }) {
     setSaving(true); setErr('');
     try {
       await onSave(amt, note || null);
+      onClose();
+    } catch (ex) {
+      setErr(ex.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const payFull = async () => {
+    if (!card.balance || card.balance <= 0) return;
+    setSaving(true); setErr('');
+    try {
+      await onSave(card.balance, 'Paid in full');
       onClose();
     } catch (ex) {
       setErr(ex.message);
@@ -36,12 +50,17 @@ export default function PayModal({ card, onSave, onClose }) {
             <div className="form-group full">
               <label>Note (optional)</label>
               <input value={note} onChange={e => setNote(e.target.value)}
-                placeholder="e.g. paid in full" />
+                placeholder="e.g. partial payment" />
             </div>
           </div>
           {err && <p className="form-error">{err}</p>}
           <div className="modal-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
+            {card.balance > 0 && (
+              <button type="button" className="btn btn-ghost btn-pay" onClick={payFull} disabled={saving}>
+                Pay in full ({fmt(card.balance)})
+              </button>
+            )}
             <button type="submit" className="btn btn-accent" disabled={saving}>
               {saving ? 'Saving…' : 'Record Payment'}
             </button>

@@ -48,12 +48,17 @@ export function useCards() {
   }, []);
 
   const payCard = useCallback(async (id, amount, note) => {
-    const card = await api.cards.pay(id, { amount, note });
+    const { card, transactionId } = await api.cards.pay(id, { amount, note });
     setCards(prev => prev.map(c => c.id === id ? card : c));
-    return card;
+    return { card, transactionId };
+  }, []);
+
+  const undoPayment = useCallback(async (cardId, txId) => {
+    const { balance } = await api.transactions.undo(cardId, txId);
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, balance } : c));
   }, []);
 
   const getTransactions = useCallback((id) => api.cards.transactions(id), []);
 
-  return { cards, loading, error, refresh: fetch, create, update, remove, newStatement, payCard, getTransactions };
+  return { cards, loading, error, refresh: fetch, create, update, remove, newStatement, payCard, undoPayment, getTransactions };
 }
