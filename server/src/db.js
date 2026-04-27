@@ -65,6 +65,17 @@ db.exec(`
     key   TEXT PRIMARY KEY,
     value TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS payoff_plans (
+    id              TEXT PRIMARY KEY,
+    card_id         TEXT NOT NULL UNIQUE REFERENCES cards(id) ON DELETE CASCADE,
+    user_id         TEXT NOT NULL REFERENCES users(id),
+    monthly_payment REAL NOT NULL,
+    start_date      TEXT NOT NULL,
+    start_balance   REAL NOT NULL,
+    rate            REAL NOT NULL,
+    created_at      TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // --- Migrate cards table (idempotent: ignore if column already exists) ---

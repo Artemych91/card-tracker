@@ -8,6 +8,23 @@ export function nextMonthDate(dateStr) {
   return d.toISOString().slice(0, 10);
 }
 
+export function calcPayoffStatus(plan, actualBalance) {
+  if (!plan) return null;
+  const { monthlyPayment, startBalance, startDate, rate } = plan;
+  const start = new Date(startDate + 'T00:00:00');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const months = Math.floor((today - start) / (1000 * 60 * 60 * 24 * 30.44));
+  if (months <= 0) return 'on-track';
+  const monthlyRate = rate / 100 / 12;
+  let bal = startBalance;
+  for (let i = 0; i < months && bal > 0.005; i++) {
+    bal = Math.max(0, bal + bal * monthlyRate - monthlyPayment);
+  }
+  if (actualBalance <= bal * 0.99) return 'ahead';
+  if (actualBalance <= bal * 1.01) return 'on-track';
+  return 'behind';
+}
+
 export function daysUntil(dateStr) {
   if (!dateStr) return null;
   const now = new Date(); now.setHours(0, 0, 0, 0);

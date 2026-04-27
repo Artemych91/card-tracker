@@ -21,7 +21,9 @@ export const api = {
     delete:       (id)     => req('DELETE', `/cards/${id}`),
     statement:    (id, b)  => req('PATCH',  `/cards/${id}/statement`, b),
     pay:          (id, b)  => req('POST',   `/cards/${id}/pay`, b),
-    transactions: (id)     => req('GET',    `/cards/${id}/transactions`),
+    transactions:     (id)     => req('GET',    `/cards/${id}/transactions`),
+    savePayoffPlan:   (id, b)  => req('PUT',    `/cards/${id}/payoff-plan`, b),
+    deletePayoffPlan: (id)     => req('DELETE', `/cards/${id}/payoff-plan`),
   },
   settings: {
     get:  ()     => req('GET', '/settings'),

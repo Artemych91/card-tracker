@@ -11,7 +11,7 @@ import SettingsModal from './components/SettingsModal';
 import { fmt, daysUntil } from './lib/utils';
 
 export default function App() {
-  const { cards, loading, error, create, update, remove, newStatement, payCard, undoPayment } = useCards();
+  const { cards, loading, error, create, update, remove, newStatement, payCard, undoPayment, updatePlan } = useCards();
   const [editCard,      setEditCard]      = useState(null);   // card obj or true (add new)
   const [statementCard, setStatementCard] = useState(null);
   const [payingCard,    setPayingCard]    = useState(null);
@@ -190,6 +190,7 @@ export default function App() {
         <PayoffModal
           card={payoffCard}
           onClose={() => setPayoffCard(null)}
+          onPlanChange={updatePlan}
         />
       )}
 

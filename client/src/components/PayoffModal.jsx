@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fmt } from '../lib/utils';
+import { api } from '../lib/api';
 
 function calcPayoff(balance, rate, payment) {
   if (!balance || !rate || payment <= 0) return null;
@@ -25,17 +26,55 @@ function calcPayoff(balance, rate, payment) {
   return { months, totalInterest, payoffStr };
 }
 
-export default function PayoffModal({ card, onClose }) {
-  const [payment, setPayment] = useState(card.minimumPayment > 0 ? String(card.minimumPayment) : '');
+export default function PayoffModal({ card, onClose, onPlanChange }) {
+  const [payment, setPayment] = useState(
+    card.payoffPlan ? String(card.payoffPlan.monthlyPayment)
+    : card.minimumPayment > 0 ? String(card.minimumPayment)
+    : ''
+  );
+  const [plan, setPlan]     = useState(card.payoffPlan || null);
+  const [saving, setSaving] = useState(false);
 
   const pmtNum = Number(payment);
   const result = calcPayoff(Number(card.balance), Number(card.rate), pmtNum);
+
+  const savePlan = async () => {
+    setSaving(true);
+    try {
+      const saved = await api.cards.savePayoffPlan(card.id, {
+        monthlyPayment: pmtNum,
+        startBalance:   Number(card.balance),
+        rate:           Number(card.rate),
+      });
+      setPlan(saved);
+      onPlanChange(card.id, saved);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removePlan = async () => {
+    await api.cards.deletePayoffPlan(card.id);
+    setPlan(null);
+    onPlanChange(card.id, null);
+  };
+
+  const planDate = plan
+    ? new Date(plan.startDate + 'T00:00:00').toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })
+    : null;
 
   return (
     <div className="modal-overlay open" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <h2>Payoff Planner</h2>
         <p className="modal-subtitle">{card.name}{card.last4 ? ` ···· ${card.last4}` : ''}</p>
+
+        {plan && (
+          <div className="plan-banner">
+            <span>Active plan: {fmt(plan.monthlyPayment)}/mo · started {planDate}</span>
+            <button className="btn-link" onClick={removePlan}>Remove</button>
+          </div>
+        )}
 
         <div className="form-group full" style={{ marginBottom: '1.25rem' }}>
           <label>Monthly payment ($)</label>
@@ -50,20 +89,27 @@ export default function PayoffModal({ card, onClose }) {
         )}
 
         {result && !result.tooLow && (
-          <div className="payoff-results">
-            <div className="payoff-row">
-              <span className="payoff-label">Months to payoff</span>
-              <span className="payoff-value">{result.months} mo</span>
+          <>
+            <div className="payoff-results">
+              <div className="payoff-row">
+                <span className="payoff-label">Months to payoff</span>
+                <span className="payoff-value">{result.months} mo</span>
+              </div>
+              <div className="payoff-row">
+                <span className="payoff-label">Total interest</span>
+                <span className="payoff-value amount-warn">{fmt(result.totalInterest)}</span>
+              </div>
+              <div className="payoff-row">
+                <span className="payoff-label">Paid off by</span>
+                <span className="payoff-value">{result.payoffStr}</span>
+              </div>
             </div>
-            <div className="payoff-row">
-              <span className="payoff-label">Total interest</span>
-              <span className="payoff-value amount-warn">{fmt(result.totalInterest)}</span>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <button className="btn btn-accent btn-sm" onClick={savePlan} disabled={saving}>
+                {saving ? 'Saving…' : 'Save this plan'}
+              </button>
             </div>
-            <div className="payoff-row">
-              <span className="payoff-label">Paid off by</span>
-              <span className="payoff-value">{result.payoffStr}</span>
-            </div>
-          </div>
+          </>
         )}
 
         <div className="modal-actions">

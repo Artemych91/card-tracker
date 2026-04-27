@@ -1,4 +1,4 @@
-import { fmt, fmtDate, daysUntil, daysLabel, nextMonthDate } from '../lib/utils';
+import { fmt, fmtDate, daysUntil, daysLabel, nextMonthDate, calcPayoffStatus } from '../lib/utils';
 
 export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, onHistory, onPayoff }) {
   const limit   = Number(card.limit || 0);
@@ -88,6 +88,14 @@ export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, o
       {card.rate > 0 && (
         <div className="card-rate">
           APR {card.rate}% · ~{(card.rate / 12).toFixed(2)}%/month
+          {card.payoffPlan && (() => {
+            const status = calcPayoffStatus(card.payoffPlan, balance);
+            const cls = status === 'ahead' ? 'payoff-status--ahead'
+                      : status === 'behind' ? 'payoff-status--behind'
+                      : 'payoff-status--ok';
+            const label = status === 'ahead' ? 'Ahead' : status === 'behind' ? 'Behind' : 'On track';
+            return <span className={`payoff-status ${cls}`}>{fmt(card.payoffPlan.monthlyPayment)}/mo · {label}</span>;
+          })()}
         </div>
       )}
 

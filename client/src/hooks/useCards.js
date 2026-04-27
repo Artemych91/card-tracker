@@ -66,5 +66,9 @@ export function useCards() {
 
   const getTransactions = useCallback((id) => api.cards.transactions(id), []);
 
-  return { cards, loading, error, refresh: fetch, create, update, remove, newStatement, payCard, undoPayment, getTransactions };
+  const updatePlan = useCallback((cardId, plan) => {
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, payoffPlan: plan } : c));
+  }, []);
+
+  return { cards, loading, error, refresh: fetch, create, update, remove, newStatement, payCard, undoPayment, getTransactions, updatePlan };
 }
