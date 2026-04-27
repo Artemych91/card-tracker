@@ -44,10 +44,13 @@ export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, o
             {fmt(balance)}
           </div>
         </div>
-        <div className="amount-block">
-          <div className="amount-label">Current balance</div>
-          <div className="amount-value">{fmt(current)}</div>
-        </div>
+        {/* current balance hidden — unusable for now */}
+        {false && (
+          <div className="amount-block">
+            <div className="amount-label">Current balance</div>
+            <div className="amount-value">{fmt(current)}</div>
+          </div>
+        )}
       </div>
 
       {limit > 0 && (
