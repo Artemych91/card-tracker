@@ -175,6 +175,7 @@ a { color: var(--good); }
 .card:hover           { border-color: var(--border2); }
 .card--overdue        { border-color: rgba(240,100,100,0.45) !important; }
 .card--urgent         { border-color: rgba(240,196,100,0.38) !important; }
+.card--unpaid         { border-color: rgba(100,160,240,0.35) !important; }
 
 .card-header {
   display: flex;

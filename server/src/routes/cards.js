@@ -85,7 +85,7 @@ router.patch('/:id/statement', (req, res) => {
         db.prepare(`
           INSERT INTO transactions (id, card_id, user_id, type, amount, balance_after, note)
           VALUES (?, ?, ?, 'interest', ?, ?, 'Auto-detected')
-        `).run(randomUUID(), req.params.id, DEFAULT_USER_ID, newBalance - expected, newBalance, 'Auto-detected');
+        `).run(randomUUID(), req.params.id, DEFAULT_USER_ID, newBalance - expected, newBalance);
       }
     }
 
@@ -95,7 +95,7 @@ router.patch('/:id/statement', (req, res) => {
     `).run(randomUUID(), req.params.id, DEFAULT_USER_ID, newBalance, newBalance);
 
     db.prepare(`
-      UPDATE cards SET balance = ?, due_date = ?, updated_at = datetime('now') WHERE id = ?
+      UPDATE cards SET balance = ?, due_date = ?, statement_date = date('now'), updated_at = datetime('now') WHERE id = ?
     `).run(newBalance, dueDate, req.params.id);
   })();
 

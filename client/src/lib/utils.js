@@ -1,3 +1,13 @@
+export function nextMonthDate(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + 1);
+  d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  return d.toISOString().slice(0, 10);
+}
+
 export function daysUntil(dateStr) {
   if (!dateStr) return null;
   const now = new Date(); now.setHours(0, 0, 0, 0);

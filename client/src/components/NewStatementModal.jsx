@@ -3,13 +3,12 @@ import { useState } from 'react';
 function suggestDueDate(card) {
   const due = card.dueDate ? new Date(card.dueDate + 'T00:00:00') : null;
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  // suggest today+21 if no due date or due date is in the past
-  if (!due || due < today) {
+  if (!due || isNaN(due.getTime()) || due < today) {
     const d = new Date(today);
     d.setDate(d.getDate() + 21);
     return d.toISOString().slice(0, 10);
   }
-  return card.dueDate;
+  return due.toISOString().slice(0, 10);
 }
 
 export default function NewStatementModal({ card, onSave, onClose }) {
@@ -37,11 +36,11 @@ export default function NewStatementModal({ card, onSave, onClose }) {
       <div className="modal">
         <h2>New Statement</h2>
         <p className="modal-subtitle">{card.name}{card.last4 ? ` ···· ${card.last4}` : ''}</p>
-        <form onSubmit={submit}>
+        <form onSubmit={submit} noValidate>
           <div className="form-grid">
             <div className="form-group full">
               <label>Statement balance ($)</label>
-              <input type="number" step="0.01" min="0" value={balance}
+              <input type="number" step="any" min="0" value={balance}
                 onChange={e => setBalance(e.target.value)} placeholder="921.00" autoFocus />
             </div>
             <div className="form-group full">

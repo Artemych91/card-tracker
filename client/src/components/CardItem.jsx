@@ -1,4 +1,4 @@
-import { fmt, fmtDate, daysUntil, daysLabel } from '../lib/utils';
+import { fmt, fmtDate, daysUntil, daysLabel, nextMonthDate } from '../lib/utils';
 
 export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, onHistory }) {
   const limit   = Number(card.limit || 0);
@@ -7,15 +7,19 @@ export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, o
   const util    = limit > 0 ? (current / limit * 100) : 0;
   const barCls  = util > 70 ? 'bar-danger' : util > 30 ? 'bar-warn' : 'bar-good';
 
-  const dueDays  = daysUntil(card.dueDate);
-  const stmtDays = daysUntil(card.statementDate);
-  const dueLabel = daysLabel(dueDays, 'due');
-  const stmtLabel= daysLabel(stmtDays, 'stmt');
+  const dueDays      = daysUntil(card.dueDate);
+  const stmtDays     = daysUntil(card.statementDate);
+  const nextStmtDate = nextMonthDate(card.statementDate);
+  const nextStmtDays = daysUntil(nextStmtDate);
+  const dueLabel     = daysLabel(dueDays, 'due');
+  const stmtLabel    = daysLabel(stmtDays, 'stmt');
+  const nextStmtLabel= daysLabel(nextStmtDays, 'stmt');
 
   let cardCls = '';
   if (balance > 0) {
     if (dueDays != null && dueDays < 0)      cardCls = 'card--overdue';
     else if (dueDays != null && dueDays <= 3) cardCls = 'card--urgent';
+    else                                      cardCls = 'card--unpaid';
   }
 
   return (
@@ -69,6 +73,13 @@ export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, o
           <div className="date-chip-value">{fmtDate(card.dueDate)}</div>
           {dueLabel && <div className={`date-chip-days ${dueLabel.cls}`}>{dueLabel.text}</div>}
         </div>
+        {nextStmtDate && (
+          <div className="date-chip">
+            <div className="date-chip-label">Next statement</div>
+            <div className="date-chip-value">{fmtDate(nextStmtDate)}</div>
+            {nextStmtLabel && <div className={`date-chip-days ${nextStmtLabel.cls}`}>{nextStmtLabel.text}</div>}
+          </div>
+        )}
       </div>
 
       {card.rate > 0 && (
