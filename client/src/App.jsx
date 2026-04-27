@@ -5,6 +5,7 @@ import CardForm from './components/CardForm';
 import NewStatementModal from './components/NewStatementModal';
 import PayModal from './components/PayModal';
 import HistoryModal from './components/HistoryModal';
+import PayoffModal from './components/PayoffModal';
 import Reminders from './components/Reminders';
 import SettingsModal from './components/SettingsModal';
 import { fmt, daysUntil } from './lib/utils';
@@ -15,6 +16,7 @@ export default function App() {
   const [statementCard, setStatementCard] = useState(null);
   const [payingCard,    setPayingCard]    = useState(null);
   const [historyCard,   setHistoryCard]   = useState(null);
+  const [payoffCard,    setPayoffCard]    = useState(null);
   const [showSettings,  setShowSettings]  = useState(false);
   const [toast,         setToast]         = useState('');
   const [undoState,     setUndoState]     = useState(null); // { cardId, txId }
@@ -145,6 +147,7 @@ export default function App() {
                   }}
                   onPay={setPayingCard}
                   onHistory={setHistoryCard}
+                  onPayoff={setPayoffCard}
                 />
               ))
             )}
@@ -180,6 +183,13 @@ export default function App() {
         <HistoryModal
           card={historyCard}
           onClose={() => setHistoryCard(null)}
+        />
+      )}
+
+      {payoffCard && (
+        <PayoffModal
+          card={payoffCard}
+          onClose={() => setPayoffCard(null)}
         />
       )}
 

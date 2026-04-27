@@ -1,6 +1,6 @@
 import { fmt, fmtDate, daysUntil, daysLabel, nextMonthDate } from '../lib/utils';
 
-export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, onHistory }) {
+export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, onHistory, onPayoff }) {
   const limit   = Number(card.limit || 0);
   const balance = Number(card.balance || 0);
   const current = Number(card.currentBalance || 0);
@@ -91,7 +91,12 @@ export default function CardItem({ card, onEdit, onDelete, onStatement, onPay, o
         </div>
       )}
 
-      <button className="card-history-link" onClick={() => onHistory(card)}>History</button>
+      <div className="card-footer-links">
+        <button className="card-history-link" onClick={() => onHistory(card)}>History</button>
+        {balance > 0 && card.rate > 0 && (
+          <button className="card-history-link" onClick={() => onPayoff(card)}>Payoff planner</button>
+        )}
+      </div>
     </div>
   );
 }

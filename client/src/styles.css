@@ -336,6 +336,32 @@ a { color: var(--good); }
 .form-error   { font-size: 13px; color: var(--danger); margin-top: 10px; }
 .form-hint    { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
 
+/* ── Payoff planner ──────────────────────────────── */
+.card-footer-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.payoff-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.payoff-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.payoff-label { color: var(--muted); }
+.payoff-value { font-family: 'DM Mono', monospace; font-weight: 500; }
+
 /* ── Balance chart ───────────────────────────────── */
 .balance-chart {
   width: 100%;
